@@ -10,8 +10,17 @@ import (
 //func get_host(conn){
 //
 //}
+func redirect_conn(socket string)(net.Conn , error){
+    conn,err := net.Dial("tcp" , socket)
+    if err != nil {
+        return nil , err 
+    }
+    return conn ,nil 
+    
+}
 
-func receive_http_request(conn net.Conn) {
+
+func get_info_in_requests(conn net.Conn) {
     defer conn.Close()
 
     scanner := bufio.NewScanner(conn)
@@ -33,19 +42,23 @@ func receive_http_request(conn net.Conn) {
         return
     }
 
-    champs := strings.Fields(data[0])
+    requestParts := strings.Fields(data[0])
+    hostparts := strings.Fields(data[1])
 
-    if len(champs) < 3 {
+    if len(requestParts) < 3 {
         return
     }
 
-    methode := champs[0]
-    path := champs[1]
-    version := champs[2]
+    methode := requestParts[0]
+    path := requestParts[1]
+    version := requestParts[2]
 
     fmt.Println("Methode:", methode)
     fmt.Println("Path:", path)
     fmt.Println("Version:", version)
+    
+    //fmt.Printf("%T",conn)
+
 }
 
 func main() {
@@ -62,7 +75,7 @@ func main() {
 
 	}
 
-	go receive_http_request(conn)
+	go get_info_in_requests(conn)
 	
     }
 
