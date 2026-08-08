@@ -7,6 +7,7 @@ import (
 	"net"
 	"strings"
     "Proxy_man_in_the_midle/urlutils"
+    "Proxy_man_in_the_midle/redirect_request"
 )
 
 
@@ -86,21 +87,43 @@ func get_info_in_requests(conn net.Conn)ReadRequests {
 
 }
 func HandleConnection(conn net.Conn){
+    defer conn.Close()
+    
     header_requests:= get_info_in_requests(conn)
+    fmt.Println(
+    "Methode:", header_requests.Methode,
+    "Target:", header_requests.Url_request,
+)
+if header_requests.Methode == "CONNECT" {
+    return
+}
+
     list_url_port,err:=urlutils.ManageURLs(header_requests.Url_request)
     if err != nil {
         fmt.Println(nil) 
+        return  
     }
+    if len(list_url_port) < 2 {
+        fmt.Println("URL invalide ou port introuvable")
+        return
+}
 
     host:=list_url_port[0]
     port:=list_url_port[1]
     serv_conn_distant,error := redirect_conn(host,port )
-    
-    _=serv_conn_distant
-    //fmt.Println("header_requests: " , header_requests.Requests_Data)
-    if error != nil {
+       if error != nil {
         fmt.Println(error)
+        return 
     }
+    
+    redirect_request.Redirect_request(serv_conn_distant,header_requests.Requests_Data)
+    redirect_request.Get_response(serv_conn_distant , conn)
+    //_=data_response
+    //fmt.Println("data response: ",data_response)
+
+    //fmt.Println("header_requests: " , header_requests.Requests_Data)
+ 
+    return 
 
     
     

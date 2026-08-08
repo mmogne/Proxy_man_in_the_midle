@@ -23,6 +23,7 @@ func ManageURLs ( rawurl string) ([]string, error) {
 
 	host_url:=url_parse.Host
 	
+	
 	if strings.Contains(host_url,":"){
 	
 		list_url_split := strings.Split(host_url,":")
@@ -40,7 +41,7 @@ func ManageURLs ( rawurl string) ([]string, error) {
 		list_url_split=[]string{url_parse.Host,port}
 		return list_url_split,nil 
 
-	}
+	} 
 	return list_url_split , nil 
 	}
 
